@@ -1,75 +1,109 @@
 #![no_std]
 
-use gstd::{msg, lock::mutex::Mutex};
+#[cfg(test)]
+mod tests;
 
-#[no_mangle]
-pub unsafe extern "C" fn handle() {
+use codec::{Decode, Encode};
+use gstd::{msg, lock::mutex::Mutex, ActorId};
 
-    let new_msg = String::from_utf8(msg::load_bytes()).expect("Invalid message");
+const MY_ACTOR_ID: ActorId = ActorId::new([1u8; 32]);
 
-    if new_msg == "Send" {
-
-    }
-    else if new_msg == "Withdraw" {
-
-    }
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn init() {
-}
-
+#[derive(Debug)]
 struct Wallet {
     balance: u64,
+    id: ActorId,
 }
+
+impl Default for Wallet {
+    fn default() -> Wallet {  
+        Wallet { balance: 0, id: MY_ACTOR_ID }
+    }
+}
+
+static mut MY_WALLET: Option<Wallet> = None;
 
 impl Wallet {
     fn new() -> Wallet {
         Wallet {
             balance: 0,
+            id: MY_ACTOR_ID
         }
     }
 
     fn get_money(&mut self, value: u64) {
         let quard = Mutex::new(self.balance);
         quard.lock();
+
+        if msg::source() == self.id {
+            msg::reply(Approvement::Error(BalanceErrors::SameWallet), 0).unwrap();
+            return;
+        }
+
         self.balance += value;
+
+        msg::reply(Approvement::Ok, 0).unwrap();
     }
 
     fn send_money(&mut self, value: u64) {
         let quard = Mutex::new(self.balance);
         quard.lock();
+
+        if msg::source() == self.id {
+            msg::reply(Approvement::Error(BalanceErrors::SameWallet), 0).unwrap();
+            return;
+        }
+
         if self.balance < value {
-            msg::reply(b"Error", 0).unwrap();
+            msg::reply(Approvement::Error(BalanceErrors::NotEnoughMoney), 0).unwrap();
         }
         else {
             self.balance -= value;
-            msg::reply(b"Ok", 0).unwrap();
+            msg::reply(Approvement::Ok, 0).unwrap();
         }
     }
 
     fn get_balance(&self) -> u64 {
+        msg::reply(self.balance, 0).unwrap();
         self.balance
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use gtest::{Program, System};
+#[derive(Debug, Decode, Encode)]
+pub enum Action {
+    Send(u64),
+    Withdraw(u64),
+    CheckBalance,
+}
 
-    #[test]
-    fn test_send() {
-        const MY_ADDRESS: u64 = 5;
+#[derive(Debug, Decode, Encode)]
+pub enum Approvement {
+    Ok,
+    Error(BalanceErrors),
+}
 
-        let system = System::new();
-        system.init_logger();
-        let program = Program::current(&system);
+#[derive(Debug, Decode, Encode)]
+pub enum BalanceErrors {
+    NotEnoughMoney,
+    SameWallet,
+}
 
+#[no_mangle]
+pub unsafe extern "C" fn handle() {
+    let action = msg::load().expect("Could not load");
+    let wal: &mut Wallet = MY_WALLET.get_or_insert(Wallet::default());
 
-    }
-
-    #[test]
-    fn test_withdraw() {
-
+    match action {
+        Action::Send(value) => {
+            wal.get_money(value)
+        }
+        Action::Withdraw(value) => {
+            wal.send_money(value)
+        }
+        Action::CheckBalance => {
+            wal.get_balance();
+        }
     }
 }
+
+#[no_mangle]
+pub unsafe extern "C" fn init() {}
