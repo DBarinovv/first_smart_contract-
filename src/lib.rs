@@ -4,7 +4,7 @@
 mod tests;
 
 use codec::{Decode, Encode};
-use gstd::{msg, lock::mutex::Mutex, ActorId};
+use gstd::{msg, ActorId};
 
 const MY_ACTOR_ID: ActorId = ActorId::new([1u8; 32]);
 
@@ -31,9 +31,6 @@ impl Wallet {
     }
 
     fn get_money(&mut self, value: u64) {
-        let quard = Mutex::new(self.balance);
-        quard.lock();
-
         if msg::source() == self.id {
             msg::reply(Approvement::Error(BalanceErrors::SameWallet), 0).unwrap();
             return;
@@ -45,9 +42,6 @@ impl Wallet {
     }
 
     fn send_money(&mut self, value: u64) {
-        let quard = Mutex::new(self.balance);
-        quard.lock();
-
         if msg::source() == self.id {
             msg::reply(Approvement::Error(BalanceErrors::SameWallet), 0).unwrap();
             return;
