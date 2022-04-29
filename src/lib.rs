@@ -1,6 +1,7 @@
 #![no_std]
 
 use gstd::{msg, ActorId, Box};
+use codec::{Decode, Encode};
 
 use primitive_types::U256;
 
@@ -16,6 +17,9 @@ struct TokenSale {
     tokens_sold: U256, 
     token_id: ActorId,
 }
+
+static mut TOKEN_SALE: Option<TokenSale> = None;
+const TOKEN_ID: ActorId = ActorId::new([2u8; 32]);
 
 impl TokenSale {
     pub fn new(token_contract: Box<dyn IERC20Token>, price: U256, token_id: ActorId) -> TokenSale {
@@ -67,8 +71,43 @@ impl TokenSale {
     }
 }
 
+
+struct Helper{}
+impl IERC20Token for Helper {
+    fn balance_of(&self, owner: ActorId) -> U256 {
+        U256::from(0)
+    }
+
+    fn transfer(&self, to: ActorId, amount: U256) -> bool {
+        true
+    }
+
+    fn decimals(&self) -> U256 {
+        U256::from(0)
+    }
+}
+
+#[derive(Debug, Decode, Encode)]
+pub enum Action {
+    Send(U256),
+    EndSale
+}
+
 #[no_mangle]
-pub unsafe extern "C" fn handle() {}
+pub unsafe extern "C" fn handle() {
+    let action = msg::load().expect("Could not load");
+    let tk_sale: &mut TokenSale = 
+        TOKEN_SALE.get_or_insert(TokenSale::new(Box::new(Helper {}), U256::from(10), TOKEN_ID));
+
+    match action {
+        Action::Send(value) => {
+            tk_sale.buy_tokens(value)
+        }
+        Action::EndSale => {
+            tk_sale.end_sale()
+        }
+    }
+}
 
 #[no_mangle]
 pub unsafe extern "C" fn init() {}
