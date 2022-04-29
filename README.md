@@ -1,6 +1,2 @@
-# Smart contract
-**The goal is to implement smart a contract that works like a wallet**
-
--`send` function 
-
--`withdraw` function
+# Token sale contract
+[Source in solidity](https://programtheblockchain.com/posts/2018/02/02/writing-a-token-sale-contract/)
