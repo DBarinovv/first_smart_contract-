@@ -1,9 +1,13 @@
 #![no_std]
 
-use gstd::{msg, ActorId, Box};
+mod tests;
+
+use gstd::{prelude::*, msg, ActorId, Box};
 use codec::{Decode, Encode};
+use sale_io::*;
 
 use primitive_types::U256;
+use scale_info::TypeInfo;
 
 trait IERC20Token {
     fn balance_of(&self, owner: ActorId) -> U256;
@@ -52,7 +56,7 @@ impl TokenSale {
             panic!("Not enough money")
         }
 
-        msg::reply(tokens_cnt, 0).unwrap();
+        msg::reply(SaleEvent::Bought(tokens_cnt), 0).unwrap();
         self.tokens_sold += tokens_cnt;
 
         if !self.token_contract.transfer(msg::source(), scaled) {
@@ -87,12 +91,6 @@ impl IERC20Token for Helper {
     }
 }
 
-#[derive(Debug, Decode, Encode)]
-pub enum Action {
-    Send(U256),
-    EndSale
-}
-
 #[no_mangle]
 pub unsafe extern "C" fn handle() {
     let action = msg::load().expect("Could not load");
@@ -100,10 +98,10 @@ pub unsafe extern "C" fn handle() {
         TOKEN_SALE.get_or_insert(TokenSale::new(Box::new(Helper {}), U256::from(10), TOKEN_ID));
 
     match action {
-        Action::Send(value) => {
+        SaleAction::Send(value) => {
             tk_sale.buy_tokens(value)
         }
-        Action::EndSale => {
+        SaleAction::EndSale => {
             tk_sale.end_sale()
         }
     }
@@ -111,3 +109,10 @@ pub unsafe extern "C" fn handle() {
 
 #[no_mangle]
 pub unsafe extern "C" fn init() {}
+
+gstd::metadata! {
+    title: "Sale_contract",
+    handle:
+        input: SaleAction,
+        output: SaleEvent,
+}
