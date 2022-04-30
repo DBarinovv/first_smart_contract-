@@ -86,11 +86,11 @@ impl TokenSale {
 }
 
 
-#[no_mangle]
-pub async unsafe extern "C" fn handle() {
+#[gstd::async_main]
+async unsafe fn main() {
     let action = msg::load().expect("Could not load");
-    let tk_sale: &mut TokenSale = 
-        TOKEN_SALE.get_or_insert(TokenSale::new(10, TOKEN_ID, 0));
+    let tk_sale: &mut TokenSale = unsafe {
+        TOKEN_SALE.get_or_insert(TokenSale::new(10, TOKEN_ID, 0)) };
 
     match action {
         SaleAction::Send(value) => {
