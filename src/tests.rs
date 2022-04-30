@@ -42,11 +42,11 @@ fn init(program: &Program, system: &System) {
 
     let res = program.send_bytes(
         MY_ADDRESS, 
-        (SaleInit { price: 10, token_id: ActorId::new([2u8; 32]), token_decimals: 0 }).encode()
+        (SaleInit { price: 100, token_id: ActorId::new([2u8; 32]), token_decimals: 0 }).encode()
     );
     assert!(res.log().is_empty());
 
-    mint_tokens(&program, MY_ID);
+    // mint_tokens(&program, MY_ID);
 }
 
 #[test]
@@ -67,6 +67,7 @@ fn test_buy() {
     init(&program, &system);
 
     let value: u128 = 5;
-    let res = program.send(MY_ADDRESS, SaleAction::Buy(value));
+
+    let res = program.send_with_value(MY_ADDRESS, SaleAction::Buy(value), 500);
     // assert!(res.contains(&(MY_ADDRESS, (SaleEvent::Bought { buyer: ActorId::new([0u8; 32]), amount: value }).encode())));
 }

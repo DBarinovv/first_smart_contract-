@@ -35,10 +35,8 @@ impl TokenSale {
 
     pub async fn buy_tokens(&mut self, tokens_cnt: u128)  {
 
-        // panic!("tokens_cnt = {}", tokens_cnt);
-
         let (res, overflow) = tokens_cnt.overflowing_mul(self.price);
-        if !overflow {
+        if overflow {
             panic!("Overflowing multiplication")
         }
 
@@ -48,7 +46,7 @@ impl TokenSale {
 
         let x: u128 = 10;
         let (scaled, overflow) = tokens_cnt.overflowing_mul((x).pow(self.token_decimals));
-        if !overflow {
+        if overflow {
             panic!("Overflowing multiplication")
         }
 
@@ -56,6 +54,8 @@ impl TokenSale {
         if tokens_left < scaled {
             panic!("Not enough tokens")
         }
+
+        panic!("Unreachable(");
 
         msg::reply(SaleEvent::Bought { buyer: msg::source(), amount: tokens_cnt }, 0).unwrap();
         self.tokens_sold += tokens_cnt;
