@@ -1,5 +1,6 @@
 #![no_std]
 
+#[cfg(test)]
 mod tests;
 
 pub mod messages;
@@ -10,6 +11,7 @@ use sale_io::*;
 
 // use primitive_types::U256;
 
+#[derive(Default)]
 struct TokenSale {
     price: u128, 
     owner: ActorId,
@@ -19,7 +21,6 @@ struct TokenSale {
 }
 
 static mut TOKEN_SALE: Option<TokenSale> = None;
-const TOKEN_ID: ActorId = ActorId::new([2u8; 32]);
 
 impl TokenSale {
     pub fn new(price: u128, token_id: ActorId, token_decimals: u32) -> TokenSale {
@@ -33,6 +34,8 @@ impl TokenSale {
     }
 
     pub async fn buy_tokens(&mut self, tokens_cnt: u128)  {
+
+        // panic!("tokens_cnt = {}", tokens_cnt);
 
         let (res, overflow) = tokens_cnt.overflowing_mul(self.price);
         if !overflow {
@@ -89,11 +92,10 @@ impl TokenSale {
 #[gstd::async_main]
 async unsafe fn main() {
     let action = msg::load().expect("Could not load");
-    let tk_sale: &mut TokenSale = unsafe {
-        TOKEN_SALE.get_or_insert(TokenSale::new(10, TOKEN_ID, 0)) };
+    let tk_sale: &mut TokenSale = unsafe { TOKEN_SALE.get_or_insert(TokenSale::default()) };
 
     match action {
-        SaleAction::Send(value) => {
+        SaleAction::Buy(value) => {
             tk_sale.buy_tokens(value).await
         }
         SaleAction::EndSale => {
@@ -104,10 +106,23 @@ async unsafe fn main() {
 
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {}
+pub unsafe extern "C" fn init() {
+    let config: SaleInit = msg::load().expect("Unable to decode SaleInit");
+    let tk_sale = TokenSale {
+        price: config.price,
+        owner: msg::source(),
+        tokens_sold: 0,
+        token_id: config.token_id,
+        token_decimals: config.token_decimals,
+    };
+
+    TOKEN_SALE = Some(tk_sale);
+}
 
 gstd::metadata! {
     title: "Sale_contract",
+    init:
+        input: SaleInit,
     handle:
         input: SaleAction,
         output: SaleEvent,
