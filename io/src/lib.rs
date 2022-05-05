@@ -8,12 +8,14 @@ use scale_info::TypeInfo;
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
 pub enum SaleAction {
+    AddTokens,
     Buy(u128),
     EndSale,
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
 pub enum SaleEvent {
+    AddedTokens(u128),
     Bought {
         buyer: ActorId,
         amount: u128,
@@ -26,4 +28,5 @@ pub struct SaleInit {
     pub price: u128, 
     pub token_id: ActorId,
     pub token_decimals: u32,
+    pub helper_send_id: ActorId,
 }

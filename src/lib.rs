@@ -6,7 +6,7 @@ mod tests;
 pub mod messages;
 pub use messages::*;
 
-use gstd::{exec, prelude::*, msg, ActorId};
+use gstd::{exec, prelude::*, msg, ActorId}; 
 use sale_io::*;
 
 // use primitive_types::U256;
@@ -18,23 +18,35 @@ struct TokenSale {
     tokens_sold: u128, 
     token_id: ActorId,
     token_decimals: u32,
+    helper_send_id: ActorId,
 }
 
 static mut TOKEN_SALE: Option<TokenSale> = None;
 
 impl TokenSale {
-    pub fn new(price: u128, token_id: ActorId, token_decimals: u32) -> TokenSale {
-        TokenSale {
-            price,
-            owner: msg::source(),
-            tokens_sold: 0, 
-            token_id,
-            token_decimals
-        }
+    // pub fn new(price: u128, token_id: ActorId, token_decimals: u32) -> TokenSale {
+    //     TokenSale {
+    //         price,
+    //         owner: msg::source(),
+    //         tokens_sold: 0, 
+    //         token_id,
+    //         token_decimals,
+    //     }
+    // }
+
+    pub async fn add_tokens(&self) {
+        let tokens_cnt = balance(&self.token_id, &self.helper_send_id).await;
+        transfer_tokens(
+            &self.token_id,
+            &self.helper_send_id,
+            &exec::program_id(),
+            tokens_cnt,
+        ).await;
+
+        msg::reply(SaleEvent::AddedTokens(tokens_cnt), 0).unwrap();
     }
 
     pub async fn buy_tokens(&mut self, tokens_cnt: u128)  {
-
         let (res, overflow) = tokens_cnt.overflowing_mul(self.price);
         if overflow {
             panic!("Overflowing multiplication")
@@ -51,11 +63,10 @@ impl TokenSale {
         }
 
         let tokens_left = balance(&self.token_id, &exec::program_id()).await;
+
         if tokens_left < scaled {
             panic!("Not enough tokens")
         }
-
-        panic!("Unreachable(");
 
         msg::reply(SaleEvent::Bought { buyer: msg::source(), amount: tokens_cnt }, 0).unwrap();
         self.tokens_sold += tokens_cnt;
@@ -91,12 +102,15 @@ impl TokenSale {
 
 #[gstd::async_main]
 async unsafe fn main() {
-    let action = msg::load().expect("Could not load");
+    let action: SaleAction = msg::load().expect("Unable to decode SaleAction");
     let tk_sale: &mut TokenSale = unsafe { TOKEN_SALE.get_or_insert(TokenSale::default()) };
 
     match action {
+        SaleAction::AddTokens => {
+            tk_sale.add_tokens().await;
+        }
         SaleAction::Buy(value) => {
-            tk_sale.buy_tokens(value).await
+            tk_sale.buy_tokens(value).await;
         }
         SaleAction::EndSale => {
             tk_sale.end_sale().await
@@ -114,6 +128,7 @@ pub unsafe extern "C" fn init() {
         tokens_sold: 0,
         token_id: config.token_id,
         token_decimals: config.token_decimals,
+        helper_send_id: config.helper_send_id,
     };
 
     TOKEN_SALE = Some(tk_sale);
