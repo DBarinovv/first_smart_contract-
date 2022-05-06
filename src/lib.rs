@@ -59,7 +59,6 @@ impl TokenSale {
             panic!("Overflowing multiplication")
         }
 
-        // let tokens_left = balance(&self.token_id, &exec::program_id()).await;
         let tokens_left = self.get_balance();
 
         if tokens_left < scaled {
@@ -83,7 +82,6 @@ impl TokenSale {
             panic!("Wrong owner for end_sale")
         }
 
-        // let tokens_left = balance(&self.token_id, &exec::program_id()).await;
         let tokens_left = self.get_balance();
 
         transfer_tokens(

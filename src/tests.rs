@@ -86,7 +86,7 @@ fn test_buy() {
     assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let value: u128 = 5;
-    let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), 5000);
+    let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), value * 1000);
     assert!(res.contains(&(USER_ID, (SaleEvent::Bought { buyer: USER_ID.into(), amount: value }).encode())));
 }
 
@@ -104,7 +104,7 @@ fn wrong_buy() {
     assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let value: u128 = 5;
-    let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), 4500); // wrong value
+    let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), value * 1000 - 1); // wrong value
     assert!(!res.contains(&(USER_ID, (SaleEvent::Bought { buyer: USER_ID.into(), amount: value }).encode())));
 }
 
@@ -125,6 +125,23 @@ fn end_sale() {
     assert!(res.contains(&(OWNER_ID, (SaleEvent::EndedSale).encode())));
 
     let value: u128 = 5;
-    let res = tk_sale.send_with_value(OWNER_ID, SaleAction::Buy(value), 5000); // must panic
+    let res = tk_sale.send_with_value(OWNER_ID, SaleAction::Buy(value), value * 1000); // must panic
     assert!(!res.contains(&(OWNER_ID, (SaleEvent::Bought { buyer: OWNER_ID.into(), amount: value }).encode()))); 
+}
+
+#[test]
+fn not_owner_end_sale() {
+    let sys = System::new();
+    init_fungible_token(&sys);
+    init_tk_sale(&sys);
+
+    sys.init_logger();
+    let _ft = sys.get_program(1);
+    let tk_sale = sys.get_program(2);
+
+    let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
+    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
+
+    let res = tk_sale.send(USER_ID, SaleAction::EndSale); // must panic
+    assert!(!res.contains(&(USER_ID, (SaleEvent::EndedSale).encode())));
 }
