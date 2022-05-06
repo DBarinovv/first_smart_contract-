@@ -16,6 +16,7 @@ struct TokenSale {
     price: u128, 
     owner: ActorId,
     tokens_sold: u128, 
+    total_tokens_num: u128,
     token_id: ActorId,
     token_decimals: u32,
     helper_send_id: ActorId,
@@ -24,17 +25,11 @@ struct TokenSale {
 static mut TOKEN_SALE: Option<TokenSale> = None;
 
 impl TokenSale {
-    // pub fn new(price: u128, token_id: ActorId, token_decimals: u32) -> TokenSale {
-    //     TokenSale {
-    //         price,
-    //         owner: msg::source(),
-    //         tokens_sold: 0, 
-    //         token_id,
-    //         token_decimals,
-    //     }
-    // }
+    pub async fn add_tokens(&mut self) {
+        if msg::source() != self.owner {
+            panic!("Wrong owner for add_tokens")
+        }
 
-    pub async fn add_tokens(&self) {
         let tokens_cnt = balance(&self.token_id, &self.helper_send_id).await;
         transfer_tokens(
             &self.token_id,
@@ -44,6 +39,8 @@ impl TokenSale {
         ).await;
 
         msg::reply(SaleEvent::AddedTokens(tokens_cnt), 0).unwrap();
+
+        self.total_tokens_num += tokens_cnt;
     }
 
     pub async fn buy_tokens(&mut self, tokens_cnt: u128)  {
@@ -62,7 +59,8 @@ impl TokenSale {
             panic!("Overflowing multiplication")
         }
 
-        let tokens_left = balance(&self.token_id, &exec::program_id()).await;
+        // let tokens_left = balance(&self.token_id, &exec::program_id()).await;
+        let tokens_left = self.get_balance();
 
         if tokens_left < scaled {
             panic!("Not enough tokens")
@@ -80,12 +78,13 @@ impl TokenSale {
         .await;
     }
 
-    pub async fn end_sale(&self) {
+    pub async fn end_sale(&mut self) {
         if msg::source() != self.owner {
-            panic!("Wrong owner")
+            panic!("Wrong owner for end_sale")
         }
 
-        let tokens_left = balance(&self.token_id, &exec::program_id()).await;
+        // let tokens_left = balance(&self.token_id, &exec::program_id()).await;
+        let tokens_left = self.get_balance();
 
         transfer_tokens(
             &self.token_id,
@@ -96,6 +95,12 @@ impl TokenSale {
         .await;
 
         msg::reply(SaleEvent::EndedSale, 0).unwrap();
+
+        self.tokens_sold += tokens_left;
+    }
+    
+    fn get_balance(&self) -> u128 {
+        self.total_tokens_num - self.tokens_sold
     }
 }
 
@@ -126,6 +131,7 @@ pub unsafe extern "C" fn init() {
         price: config.price,
         owner: msg::source(),
         tokens_sold: 0,
+        total_tokens_num: 0,
         token_id: config.token_id,
         token_decimals: config.token_decimals,
         helper_send_id: config.helper_send_id,
