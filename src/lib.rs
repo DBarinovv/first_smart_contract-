@@ -6,6 +6,8 @@ mod tests;
 pub mod messages;
 pub use messages::*;
 
+pub mod constants;
+
 use gstd::{exec, prelude::*, msg, ActorId}; 
 use sale_io::*;
 

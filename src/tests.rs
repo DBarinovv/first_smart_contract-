@@ -3,11 +3,7 @@ use gtest::{Program, System};
 use gstd::{String, Encode};
 use sale_io::*;
 
-const TOKEN_ID: u64 = 1;
-const TK_SALE_ID: u64 = 2;
-const HELPER_ID: u64 = 3;
-const OWNER_ID: u64 = 100001;
-const USER_ID: u64 = 12345;
+use crate::constants::*;
 
 fn init_fungible_token(sys: &System) {
     let ft = Program::from_file(
@@ -25,18 +21,18 @@ fn init_fungible_token(sys: &System) {
 
     assert!(res.log().is_empty());
 
-    mint_tokens(&ft, 100000);
+    mint_tokens(&ft);
 }
 
-fn mint_tokens(ft: &Program<'_>, tokens_cnt: u128) {
-    let res = ft.send(HELPER_ID, Action::Mint(tokens_cnt));
+fn mint_tokens(ft: &Program<'_>) {
+    let res = ft.send(HELPER_ID, Action::Mint(TOKENS_CNT));
     assert!(!res.main_failed());
 
     let res = ft.send(
         HELPER_ID,
         Action::Approve {
             to: TK_SALE_ID.into(),
-            amount: tokens_cnt,
+            amount: TOKENS_CNT,
         },  
     );
     assert!(!res.main_failed());
@@ -58,9 +54,7 @@ fn init_tk_sale(sys: &System) {
     assert!(res.log().is_empty());
 }   
 
-#[test]
-fn test_init() {
-    let sys = System::new();
+fn init(sys: &System) {
     init_fungible_token(&sys);
     init_tk_sale(&sys);
 
@@ -69,21 +63,20 @@ fn test_init() {
     let tk_sale = sys.get_program(2);
 
     let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
-    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
+    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(TOKENS_CNT)).encode())));
+}
+
+#[test]
+fn test_init() {
+    let sys = System::new();
+    init(&sys);
 }
 
 #[test]
 fn test_buy() {
     let sys = System::new();
-    init_fungible_token(&sys);
-    init_tk_sale(&sys);
-
-    sys.init_logger();
-    let _ft = sys.get_program(1);
+    init(&sys);
     let tk_sale = sys.get_program(2);
-
-    let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
-    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let value: u128 = 5;
     let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), value * 1000);
@@ -93,15 +86,8 @@ fn test_buy() {
 #[test]
 fn wrong_buy() {
     let sys = System::new();
-    init_fungible_token(&sys);
-    init_tk_sale(&sys);
-
-    sys.init_logger();
-    let _ft = sys.get_program(1);
+    init(&sys);
     let tk_sale = sys.get_program(2);
-
-    let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
-    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let value: u128 = 5;
     let res = tk_sale.send_with_value(USER_ID, SaleAction::Buy(value), value * 1000 - 1); // wrong value
@@ -111,15 +97,8 @@ fn wrong_buy() {
 #[test]
 fn end_sale() {
     let sys = System::new();
-    init_fungible_token(&sys);
-    init_tk_sale(&sys);
-
-    sys.init_logger();
-    let _ft = sys.get_program(1);
+    init(&sys);
     let tk_sale = sys.get_program(2);
-
-    let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
-    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let res = tk_sale.send(OWNER_ID, SaleAction::EndSale);
     assert!(res.contains(&(OWNER_ID, (SaleEvent::EndedSale).encode())));
@@ -132,15 +111,8 @@ fn end_sale() {
 #[test]
 fn not_owner_end_sale() {
     let sys = System::new();
-    init_fungible_token(&sys);
-    init_tk_sale(&sys);
-
-    sys.init_logger();
-    let _ft = sys.get_program(1);
+    init(&sys);
     let tk_sale = sys.get_program(2);
-
-    let res = tk_sale.send(OWNER_ID, SaleAction::AddTokens);
-    assert!(res.contains(&(OWNER_ID, (SaleEvent::AddedTokens(100000)).encode())));
 
     let res = tk_sale.send(USER_ID, SaleAction::EndSale); // must panic
     assert!(!res.contains(&(USER_ID, (SaleEvent::EndedSale).encode())));
