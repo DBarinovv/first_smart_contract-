@@ -47,7 +47,7 @@ fn init_tk_sale(sys: &System) {
         SaleInit {
             price: 1000,
             token_id: TOKEN_ID.into(),
-            token_decimals: 0,
+            token_decimals: 18,
             helper_send_id: HELPER_ID.into(),
         },
     );

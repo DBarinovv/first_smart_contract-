@@ -11,8 +11,6 @@ pub mod constants;
 use gstd::{exec, prelude::*, msg, ActorId}; 
 use sale_io::*;
 
-// use primitive_types::U256;
-
 #[derive(Default)]
 struct TokenSale {
     price: u128, 
@@ -33,6 +31,12 @@ impl TokenSale {
         }
 
         let tokens_cnt = balance(&self.token_id, &self.helper_send_id).await;
+
+        if self.total_tokens_num + tokens_cnt > 10_u128.pow(self.token_decimals) {
+            msg::reply(SaleEvent::ToManyTokens, 0).unwrap();
+            return
+        }
+
         transfer_tokens(
             &self.token_id,
             &self.helper_send_id,
@@ -55,15 +59,9 @@ impl TokenSale {
             panic!("Wrong amount sent")
         }
 
-        let x: u128 = 10;
-        let (scaled, overflow) = tokens_cnt.overflowing_mul((x).pow(self.token_decimals));
-        if overflow {
-            panic!("Overflowing multiplication")
-        }
-
         let tokens_left = self.get_balance();
 
-        if tokens_left < scaled {
+        if tokens_left < tokens_cnt {
             panic!("Not enough tokens")
         }
 
@@ -74,7 +72,7 @@ impl TokenSale {
             &self.token_id,
             &exec::program_id(),
             &msg::source(),
-            scaled,
+            tokens_cnt,
         )
         .await;
     }

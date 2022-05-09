@@ -21,6 +21,7 @@ pub enum SaleEvent {
         amount: u128,
     },
     EndedSale,
+    ToManyTokens,
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
