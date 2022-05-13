@@ -1,0 +1,22 @@
+[dependencies.orig-project]
+default-features = false
+package = 'fungible-token'
+path = '/home/denis/Desktop/my_rust/token_sale_contract/fungible-token'
+
+[lib]
+crate-type = ['cdylib']
+name = 'fungible_token'
+
+[package]
+edition = '2021'
+name = 'fungible-token-wasm'
+version = '0.1.0'
+[profile.dev]
+lto = true
+opt-level = 's'
+
+[profile.release]
+lto = true
+opt-level = 's'
+
+[workspace]

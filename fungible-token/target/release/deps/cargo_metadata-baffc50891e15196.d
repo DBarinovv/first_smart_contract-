@@ -1,0 +1,11 @@
+/home/denis/Desktop/my_rust/token_sale_contract/fungible-token/target/release/deps/cargo_metadata-baffc50891e15196.rmeta: /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/lib.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/dependency.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/diagnostic.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/errors.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/messages.rs
+
+/home/denis/Desktop/my_rust/token_sale_contract/fungible-token/target/release/deps/libcargo_metadata-baffc50891e15196.rlib: /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/lib.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/dependency.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/diagnostic.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/errors.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/messages.rs
+
+/home/denis/Desktop/my_rust/token_sale_contract/fungible-token/target/release/deps/cargo_metadata-baffc50891e15196.d: /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/lib.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/dependency.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/diagnostic.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/errors.rs /home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/messages.rs
+
+/home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/lib.rs:
+/home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/dependency.rs:
+/home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/diagnostic.rs:
+/home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/errors.rs:
+/home/denis/.cargo/registry/src/github.com-1ecc6299db9ec823/cargo_metadata-0.14.2/src/messages.rs:

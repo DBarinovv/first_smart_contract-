@@ -1,0 +1,60 @@
+[0m[0m[1m[32m   Compiling[0m proc-macro2 v1.0.37
+[0m[0m[1m[32m   Compiling[0m unicode-xid v0.2.2
+[0m[0m[1m[32m   Compiling[0m syn v1.0.92
+[0m[0m[1m[32m   Compiling[0m serde_derive v1.0.136
+[0m[0m[1m[32m   Compiling[0m serde v1.0.136
+[0m[0m[1m[32m   Compiling[0m futures-core v0.3.21
+[0m[0m[1m[32m   Compiling[0m static_assertions v1.1.0
+[0m[0m[1m[32m   Compiling[0m serde_json v1.0.79
+[0m[0m[1m[32m   Compiling[0m log v0.4.16
+[0m[0m[1m[32m   Compiling[0m camino v1.0.7
+[0m[0m[1m[32m   Compiling[0m semver v1.0.7
+[0m[0m[1m[32m   Compiling[0m crunchy v0.2.2
+[0m[0m[1m[32m   Compiling[0m futures-task v0.3.21
+[0m[0m[1m[32m   Compiling[0m arrayvec v0.7.2
+[0m[0m[1m[32m   Compiling[0m byte-slice-cast v1.2.1
+[0m[0m[1m[32m   Compiling[0m futures-sink v0.3.21
+[0m[0m[1m[32m   Compiling[0m anyhow v1.0.57
+[0m[0m[1m[32m   Compiling[0m futures-util v0.3.21
+[0m[0m[1m[32m   Compiling[0m dlmalloc v0.1.4 (https://github.com/gear-tech/dlmalloc-rust.git?rev=e76ae98#e76ae986)
+[0m[0m[1m[32m   Compiling[0m itoa v1.0.1
+[0m[0m[1m[32m   Compiling[0m cfg-if v1.0.0
+[0m[0m[1m[32m   Compiling[0m ryu v1.0.9
+[0m[0m[1m[32m   Compiling[0m futures-channel v0.3.21
+[0m[0m[1m[32m   Compiling[0m hex v0.4.3
+[0m[0m[1m[32m   Compiling[0m byteorder v1.4.3
+[0m[0m[1m[32m   Compiling[0m pin-project-lite v0.2.9
+[0m[0m[1m[32m   Compiling[0m pin-utils v0.1.0
+[0m[0m[1m[32m   Compiling[0m str-buf v2.0.4
+[0m[0m[1m[32m   Compiling[0m parity-wasm v0.42.2
+[0m[0m[1m[32m   Compiling[0m pathdiff v0.2.1
+[0m[0m[1m[32m   Compiling[0m futures-io v0.3.21
+[0m[0m[1m[32m   Compiling[0m gcore v0.1.0 (https://github.com/gear-tech/gear.git#0fbfae38)
+[0m[0m[1m[32m   Compiling[0m bs58 v0.4.0
+[0m[0m[1m[32m   Compiling[0m fixed-hash v0.7.0
+[0m[0m[1m[32m   Compiling[0m quote v1.0.18
+[0m[0m[1m[32m   Compiling[0m pwasm-utils v0.19.0
+[0m[0m[1m[32m   Compiling[0m uint v0.9.3
+[0m[0m[1m[32m   Compiling[0m galloc v0.1.0 (https://github.com/gear-tech/gear.git#0fbfae38)
+[0m[0m[1m[32m   Compiling[0m futures v0.3.21
+[0m[0m[1m[32m   Compiling[0m thiserror-impl v1.0.30
+[0m[0m[1m[32m   Compiling[0m impl-trait-for-tuples v0.2.2
+[0m[0m[1m[32m   Compiling[0m derive_more v0.99.17
+[0m[0m[1m[32m   Compiling[0m gstd-codegen v0.1.0 (https://github.com/gear-tech/gear.git#0fbfae38)
+[0m[0m[1m[32m   Compiling[0m thiserror v1.0.30
+[0m[0m[1m[32m   Compiling[0m toml v0.5.9
+[0m[0m[1m[32m   Compiling[0m cargo-platform v0.1.2
+[0m[0m[1m[32m   Compiling[0m proc-macro-crate v1.1.3
+[0m[0m[1m[32m   Compiling[0m cargo_metadata v0.14.2
+[0m[0m[1m[32m   Compiling[0m parity-scale-codec-derive v3.1.2
+[0m[0m[1m[32m   Compiling[0m scale-info-derive v2.1.1
+[0m[0m[1m[32m   Compiling[0m gear-wasm-builder v0.1.2 (https://github.com/gear-tech/gear.git#0fbfae38)
+[0m[0m[1m[32m   Compiling[0m parity-scale-codec v3.1.2
+[0m[0m[1m[32m   Compiling[0m fungible-token v0.1.0 (/home/denis/Desktop/my_rust/token_sale_contract/fungible-token)
+[0m[0m[1m[32m   Compiling[0m impl-codec v0.6.0
+[0m[0m[1m[32m   Compiling[0m scale-info v2.1.1
+[0m[0m[1m[32m   Compiling[0m primitive-types v0.11.1
+[0m[0m[1m[32m   Compiling[0m gstd v0.1.0 (https://github.com/gear-tech/gear.git#0fbfae38)
+[0m[0m[1m[32m   Compiling[0m ft-io v0.1.0 (/home/denis/Desktop/my_rust/token_sale_contract/fungible-token/io)
+[0m[0m[1m[32m   Compiling[0m fungible-token-wasm v0.1.0 (/home/denis/Desktop/my_rust/token_sale_contract/fungible-token/target/release/build/fungible-token-2d5f1700825c463e/out)
+[0m[0m[1m[32m    Finished[0m release [optimized] target(s) in 1m 16s
