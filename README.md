@@ -5,6 +5,7 @@
   + `ico_started`: `bool`,
   + `start_time`: `u64`,
   + `duration`: `u64`,
+- `start_price`: `u128`,
 - `current_price`: `u128`,
 - `price_increase_step`: `u128`
 - `time_increase_step`: `u128`,
@@ -21,3 +22,11 @@
 - `fn get_balance()` (returns the number of remaining tokens)
 - `fn update_price()` (checks current timestamp and updates price if needed)
 - `fn in_process()` (checks if ico wasn't ended and get_balance() > 0)
+
+## Init values
+- tokens_goal
+- token_id
+- owner 
+- start_price
+- price_increase_step (optional)
+- time_increase_step (optional)
