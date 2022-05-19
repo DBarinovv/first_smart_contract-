@@ -1,7 +1,7 @@
 [dependencies.orig-project]
 default-features = false
 package = 'fungible-token'
-path = '/home/denis/Desktop/my_rust/token_sale_contract/fungible-token'
+path = '/home/denis/Desktop/my_rust/ICO_contract/fungible-token'
 
 [lib]
 crate-type = ['cdylib']
