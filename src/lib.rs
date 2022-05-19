@@ -1,8 +1,5 @@
 #![no_std]
 
-#[cfg(test)]
-mod tests;
-
 pub mod messages;
 pub use messages::*;
 
@@ -36,7 +33,7 @@ impl IcoContract {
         let balance = balance(&self.token_id, &self.owner).await;
 
         if balance < self.tokens_goal {
-            panic!("Need to mint at least {} tokens", self.tokens_goal)
+            panic!("Need to mint at least {} (= tokens goal) tokens", self.tokens_goal)
         }
 
         transfer_tokens(&self.token_id, &self.owner, &exec::program_id(), self.tokens_goal).await;
@@ -55,7 +52,7 @@ impl IcoContract {
         }
         else {
             panic!(
-                "start_contract(): ICO contract was started: {}  Owner message: {}",
+                "start_contract(): ICO contract's already been started: {}  Owner message: {}",
                 self.ico_state.ico_started,
                 msg::source() == self.owner
             );
@@ -75,7 +72,7 @@ impl IcoContract {
         }
 
         if msg::value() != res {
-            panic!("Wrong amount sent expect {} get {}", res, msg::value())
+            panic!("Wrong amount sent, expect {} get {}", res, msg::value())
         }
 
         if self.tokens_sold + tokens_cnt > self.tokens_goal {
@@ -92,7 +89,7 @@ impl IcoContract {
         msg::reply(IcoEvent::Bought { buyer: msg::source(), amount: tokens_cnt }, 0).unwrap();
     }
 
-    async fn end_sale(&mut self) {
+    async fn _end_sale(&mut self) {
         let time_now: u64 = exec::block_timestamp();
 
         if !self.ico_state.ico_ended {
@@ -218,6 +215,7 @@ pub unsafe extern "C" fn init() {
         token_id: config.token_id,
         owner: config.owner,
         start_price: config.start_price,
+        current_price: config.start_price,
         price_increase_step: config.price_increase_step,
         time_increase_step: config.time_increase_step,
         ..IcoContract::default()
