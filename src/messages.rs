@@ -30,18 +30,26 @@ pub async fn balance(token_id: &ActorId, account: &ActorId) -> u128 {
     }
 }
 
-pub async fn mint_tokens(token_id: &ActorId, amount: u128) {
-    let _mint_response: Event =
-        msg::send_and_wait_for_reply(*token_id, Action::Mint(amount), 0)
-            .unwrap()
-            .await
-            .expect("Error in balance");
-}
+// pub async fn mint_tokens(token_id: &ActorId, amount: u128) {
+//     let mint_response: Event =
+//         msg::send_and_wait_for_reply(*token_id, Action::Mint(amount), 0)
+//             .unwrap()
+//             .await
+//             .expect("Error in mint");
+
+//     if let Event::Transfer { from: sender, to: receiver, amount: value } = mint_response {
+//         panic!("Sender = {:?} receiver = {:?} amount = {}", sender, receiver, value)
+//     }
+//     else {
+//         panic!("Not get((")
+//     }
+
+// }
 
 pub async fn approve(token_id: &ActorId, account: &ActorId, amount: u128) {
     let _approve_response: Event =
         msg::send_and_wait_for_reply(*token_id, Action::Approve { to: *account, amount }, 0)
             .unwrap()
             .await
-            .expect("Error in balance");
+            .expect("Error in approve");
 }

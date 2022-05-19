@@ -11,6 +11,7 @@ pub struct IcoState {
     pub ico_started: bool,
     pub start_time: u64,
     pub duration: u64,
+    pub ico_ended: bool,
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]

@@ -1,3 +1,5 @@
 .binpath
 Cargo.lock
 target/*
+fungible-token/*
+fungible-token/target/*
