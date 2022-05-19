@@ -1,3 +1,5 @@
+use core::time::Duration;
+
 use ft_io::*;
 use gtest::{Program, System};
 use gstd::{String, Encode};
@@ -59,18 +61,23 @@ fn init_ico(sys: &System) {
 fn init(sys: &System) {
     init_fungible_token(&sys);
     init_ico(&sys);
-
-    sys.init_logger();
-    let _ft = sys.get_program(1);
-    let ico = sys.get_program(2);
-
-    let res = ico.send(OWNER_ID, IcoAction::StartSale(20000));
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted.encode())));
 }
 
 #[test]
 fn test_init() {
     let sys = System::new();
     init(&sys);
+}
+
+#[test]
+fn start_ico() {
+    let sys = System::new();
+    init(&sys);
+
+    let ico = sys.get_program(2);
+
+    let duration = Duration::from_secs(20).as_millis() as u64;
+    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
+    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
 }
 

@@ -51,7 +51,7 @@ impl IcoContract {
             self.ico_state.duration = duration;
             self.ico_state.start_time = exec::block_timestamp();
 
-            msg::reply(IcoEvent::SaleStarted, 0).unwrap();
+            msg::reply(IcoEvent::SaleStarted(self.ico_state.duration), 0).unwrap();
         }
         else {
             panic!(

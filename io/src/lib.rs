@@ -22,7 +22,7 @@ pub enum IcoAction {
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
 pub enum IcoEvent {
-    SaleStarted,
+    SaleStarted(u64),
     Bought {
         buyer: ActorId,
         amount: u128,
