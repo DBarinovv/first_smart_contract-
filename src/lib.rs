@@ -10,7 +10,7 @@ use ico_io::*;
 
 use core::{panic};
 
-use gstd::{prelude::*, exec, msg, ActorId}; 
+use gstd::{prelude::*, exec, msg, ActorId, debug}; 
 
 #[derive(Default)]
 struct IcoContract {
@@ -66,13 +66,21 @@ impl IcoContract {
 
         self.update_price(time_now);
 
-        let cost = tokens_cnt * self.current_price;
+        let (cost, overflow) = tokens_cnt.overflowing_mul(self.current_price);
+        if overflow {
+            panic!("Overflowing multiplication: {} * {}", tokens_cnt, self.current_price)
+        }
 
         if msg::value() != cost {
             panic!("Wrong amount sent, expect {} get {}", cost, msg::value())
         }
 
-        if self.tokens_sold + tokens_cnt > self.tokens_goal {
+        let (tokens_sum, overflow) = self.tokens_sold.overflowing_add(tokens_cnt);
+        if overflow {
+            panic!("Overflowing addition: {} + {}", self.tokens_sold, tokens_cnt)
+        }
+
+        if tokens_sum > self.tokens_goal {
             panic!("Not enough tokens to sell")
         }
 
@@ -185,7 +193,12 @@ async unsafe fn main() {
             }
         }
         IcoAction::Buy(value) => {
-            ico.buy_tokens(value)
+            if value == 0 {
+                panic!("Can't buy {} tokens", value)
+            }
+            else {
+                ico.buy_tokens(value)
+            }
         }
         IcoAction::EndSale => {
             ico.end_sale().await
