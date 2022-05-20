@@ -19,6 +19,7 @@ pub enum IcoAction {
     StartSale(u64),
     Buy(u128),
     EndSale,
+    BalanceOf(ActorId),
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
@@ -29,6 +30,10 @@ pub enum IcoEvent {
         amount: u128,
     },
     SaleEnded,
+    BalanceOf {
+        address: ActorId,
+        balance: u128,
+    },
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]

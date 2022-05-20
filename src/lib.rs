@@ -10,7 +10,7 @@ use ico_io::*;
 
 use core::{panic};
 
-use gstd::{prelude::*, exec, msg, ActorId, debug}; 
+use gstd::{prelude::*, exec, msg, ActorId}; 
 
 #[derive(Default)]
 struct IcoContract {
@@ -187,6 +187,18 @@ async unsafe fn main() {
         }
         IcoAction::EndSale => {
             ico.end_sale().await
+        }
+        IcoAction::BalanceOf(address) => {
+            if msg::source() != ico.owner {
+                panic!("BalanceOf(): Not owner message");
+            }
+
+            if let Some(val) = ico.token_holders.get(&address) {
+                msg::reply(IcoEvent::BalanceOf { address: address, balance: *val }, 0).unwrap();
+            }
+            else {
+                msg::reply(IcoEvent::BalanceOf { address: address, balance: 0 }, 0).unwrap();
+            }
         }
     }
 }

@@ -1,6 +1,8 @@
+use core::time::Duration;
+
 use ft_io::*;
 use gtest::{Program, System};
-use gstd::String;
+use gstd::{String, Encode};
 use ico_io::*;
 
 use ico_contract::constants::*;
@@ -60,4 +62,26 @@ pub fn init(sys: &System) {
 
     init_fungible_token(&sys);
     init_ico(&sys);
+}
+
+pub fn start_sale(ico: &Program, ico_duration: u64) {
+    let duration = Duration::from_secs(ico_duration).as_millis() as u64;
+    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
+
+    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
+}
+
+pub fn end_sale(ico: &Program) {
+    let res = ico.send(OWNER_ID, IcoAction::EndSale);
+    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded.encode())));
+}
+
+pub fn buy_tokens(ico: &Program, amount: u128, price: u128) {
+    let res = ico.send_with_value(USER_ID, IcoAction::Buy(amount), price);
+    assert!(res.contains(&(USER_ID, (IcoEvent::Bought { buyer: USER_ID.into(), amount }).encode())));
+}
+
+pub fn balance_of(ico: &Program, amount: u128) {
+    let res = ico.send(OWNER_ID, IcoAction::BalanceOf(USER_ID.into()));
+    assert!(res.contains(&(OWNER_ID, (IcoEvent::BalanceOf { address: USER_ID.into() , balance: amount }).encode())));
 }

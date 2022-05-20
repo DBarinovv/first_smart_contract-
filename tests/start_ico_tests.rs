@@ -17,9 +17,7 @@ fn start_ico() {
 
     let ico = sys.get_program(2);
 
-    let duration = Duration::from_secs(20).as_millis() as u64;
-    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
+    start_sale(&ico, 2);
 }
 
 #[test]
@@ -43,12 +41,8 @@ fn second_start_ico() {
 
     let ico = sys.get_program(2);
 
-    let duration = Duration::from_secs(20).as_millis() as u64;
-    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
-
-    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
+    start_sale(&ico, 1);
+    start_sale(&ico, 1);
 }
 
 #[test]
@@ -86,8 +80,6 @@ fn not_minting_tokens() {
     );
     assert!(res.log().is_empty());
 
-    let duration = Duration::from_secs(20).as_millis() as u64;
-    let res = ico.send(OWNER_ID, IcoAction::StartSale(duration));
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleStarted(duration).encode())));
+    start_sale(&ico, 1);
 }
 
