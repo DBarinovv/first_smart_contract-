@@ -1,7 +1,7 @@
 use gstd::ActorId;
 
 pub const TOKEN_ID: u64 = 1;
-pub const TK_SALE_ID: u64 = 2;
+pub const ICO_CONTRACT_ID: u64 = 2;
 pub const OWNER_ID: u64 = 100001;
 pub const USER_ID: u64 = 12345;
 
