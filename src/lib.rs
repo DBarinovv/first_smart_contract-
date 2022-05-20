@@ -10,7 +10,7 @@ use ico_io::*;
 
 use core::{panic};
 
-use gstd::{prelude::*, exec, msg, ActorId}; 
+use gstd::{prelude::*, exec, msg, ActorId, debug}; 
 
 #[derive(Default)]
 struct IcoContract {
@@ -89,14 +89,22 @@ impl IcoContract {
         msg::reply(IcoEvent::Bought { buyer: msg::source(), amount: tokens_cnt }, 0).unwrap();
     }
 
-    async fn _end_sale(&mut self) {
+    async fn end_sale(&mut self) {
         let time_now: u64 = exec::block_timestamp();
 
-        if !self.ico_state.ico_ended {
+        if msg::source() != self.owner {
+            panic!("end_sale(): Not owner message");
+        }
+
+        if self.ico_state.ico_ended {
             panic!("You can end sale only once")
         }
 
-        if !self.in_process(time_now, false) {
+        if !self.ico_state.ico_started {
+            panic!("end_sale(): Ico wan't started")
+        }
+
+        if !self.in_process(time_now, false){
 
             for (id, val) in &self.token_holders {
                 transfer_tokens(
@@ -125,12 +133,7 @@ impl IcoContract {
             return
         }
 
-        let mut steps_passed = amount / step;
-        if amount % step != 0 {
-            steps_passed += 1;
-        }
-
-        self.current_price = self.start_price + self.price_increase_step * steps_passed;
+        self.current_price = self.start_price + self.price_increase_step * (amount / step);
     }
     
     fn get_balance(&self) -> u128 {
@@ -177,21 +180,24 @@ async unsafe fn main() {
 
     match action {
         IcoAction::StartSale(duration) => {
-            ico.start_ico(duration).await;
+            ico.start_ico(duration).await
         }
         IcoAction::Buy(value) => {
-            ico.buy_tokens(value);
+            ico.buy_tokens(value)
+        }
+        IcoAction::EndSale => {
+            ico.end_sale().await
         }
     }
 }
 
 fn check_input(config: &IcoInit) {
     if config.tokens_goal == 0 {
-        panic!("Tokens goal is zero: {:?}", config.tokens_goal )
+        panic!("Tokens goal is zero: {:?}", config.tokens_goal)
     }
 
     if config.token_id == ZERO_ID {
-        panic!("Token address is zero: {:?}", config.token_id )
+        panic!("Token address is zero: {:?}", config.token_id)
     }
 
     if config.owner == ZERO_ID {
@@ -231,4 +237,37 @@ gstd::metadata! {
     handle:
         input: IcoAction,
         output: IcoEvent,
+    state:
+        input: State,
+        output: StateReply,
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+    let time_now: u64 = exec::block_timestamp();
+
+    let state: State = msg::load().expect("failed to decode State");
+    let ico: &mut IcoContract = ICO_CONTRACT.get_or_insert(IcoContract::default());
+
+    let encoded = match state {
+        State::CurrentPrice => {
+            ico.update_price(time_now);
+            StateReply::CurrentPrice(self.current_price)
+        } 
+        State::TokensLeft => {
+            StateReply::TokensLeft(ico.get_balance())
+        }
+        State::Balance(address) => {
+            if let Some(val) = ico.token_holders.get(&address) {
+                StateReply::Balance(val)
+            }
+            else {
+                StateReply::Balance(0)
+            }
+        }
+    };
+
+    let result = gstd::macros::util::to_wasm_ptr(&(encoded[..]));
+    core::mem::forget(encoded);
+    result
 }

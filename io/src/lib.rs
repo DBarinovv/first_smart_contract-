@@ -18,6 +18,7 @@ pub struct IcoState {
 pub enum IcoAction {
     StartSale(u64),
     Buy(u128),
+    EndSale,
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
@@ -38,4 +39,18 @@ pub struct IcoInit {
     pub start_price: u128,
     pub price_increase_step: u128,
     pub time_increase_step: u128,
+}
+
+#[derive(Debug, Decode, Encode, TypeInfo)]
+pub enum State {
+    CurrentPrice,
+    TokensLeft,
+    Balance(ActorId),
+}
+
+#[derive(Debug, Encode, TypeInfo)]
+pub enum StateReply {
+    CurrentPrice(u128),
+    TokensLeft(u128),
+    Balance(u128),
 }

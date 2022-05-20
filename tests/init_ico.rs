@@ -47,9 +47,9 @@ fn init_ico(sys: &System) {
             tokens_goal: TOKENS_CNT, 
             token_id: TOKEN_ID.into(), 
             owner: OWNER_ID.into(), 
-            start_price: 1000, 
-            price_increase_step: 100, 
-            time_increase_step: 5000, 
+            start_price: START_PRICE, 
+            price_increase_step: PRICE_INCREASE_STEP, 
+            time_increase_step: TIME_INCREASE_STEP, 
         },
     );
     assert!(res.log().is_empty());
