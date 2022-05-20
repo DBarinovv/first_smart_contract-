@@ -33,7 +33,7 @@ fn mint_tokens(ft: &Program<'_>) {
     let res = ft.send(
         OWNER_ID,
         Action::Approve {
-            to: TK_SALE_ID.into(),
+            to: ICO_CONTRACT_ID.into(),
             amount: TOKENS_CNT,
         },  
     );
