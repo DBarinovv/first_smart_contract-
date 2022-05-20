@@ -11,12 +11,6 @@ mod init_ico;
 use init_ico::*;
 
 #[test]
-fn test_init() {
-    let sys = System::new();
-    init(&sys);
-}
-
-#[test]
 fn start_ico() {
     let sys = System::new();
     init(&sys);
