@@ -48,7 +48,7 @@ pub enum State {
     Balance(ActorId),
 }
 
-#[derive(Debug, Encode, TypeInfo)]
+#[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum StateReply {
     CurrentPrice(u128),
     TokensLeft(u128),

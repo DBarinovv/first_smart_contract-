@@ -252,17 +252,17 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let encoded = match state {
         State::CurrentPrice => {
             ico.update_price(time_now);
-            StateReply::CurrentPrice(self.current_price)
+            StateReply::CurrentPrice(ico.current_price).encode()
         } 
         State::TokensLeft => {
-            StateReply::TokensLeft(ico.get_balance())
+            StateReply::TokensLeft(ico.get_balance()).encode()
         }
         State::Balance(address) => {
             if let Some(val) = ico.token_holders.get(&address) {
-                StateReply::Balance(val)
+                StateReply::Balance(*val).encode()
             }
             else {
-                StateReply::Balance(0)
+                StateReply::Balance(0).encode()
             }
         }
     };
