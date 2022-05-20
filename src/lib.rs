@@ -66,13 +66,10 @@ impl IcoContract {
 
         self.update_price(time_now);
 
-        let (res, overflow) = tokens_cnt.overflowing_mul(self.current_price);
-        if overflow {
-            panic!("Overflowing multiplication")
-        }
+        let cost = tokens_cnt * self.current_price;
 
-        if msg::value() != res {
-            panic!("Wrong amount sent, expect {} get {}", res, msg::value())
+        if msg::value() != cost {
+            panic!("Wrong amount sent, expect {} get {}", cost, msg::value())
         }
 
         if self.tokens_sold + tokens_cnt > self.tokens_goal {
@@ -180,7 +177,12 @@ async unsafe fn main() {
 
     match action {
         IcoAction::StartSale(duration) => {
-            ico.start_ico(duration).await
+            if duration == 0 {
+                panic!("Can't start ico with duration = {}", duration)
+            }
+            else {
+                ico.start_ico(duration).await
+            }
         }
         IcoAction::Buy(value) => {
             ico.buy_tokens(value)

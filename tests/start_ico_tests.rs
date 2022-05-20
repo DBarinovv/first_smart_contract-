@@ -47,6 +47,17 @@ fn second_start_ico() {
 
 #[test]
 #[should_panic]
+fn zero_duration_start_ico() {
+    let sys = System::new();
+    init(&sys);
+
+    let ico = sys.get_program(2);
+
+    start_sale(&ico, 0);
+}
+
+#[test]
+#[should_panic]
 fn not_minting_tokens() {
     let sys = System::new();
 
