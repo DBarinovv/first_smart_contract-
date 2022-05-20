@@ -21,12 +21,12 @@
 - `pub fn buy_tokens(tokens_cnt: u128)` (sender buys tokens_cnt tokens)
 - `fn get_balance()` (returns the number of remaining tokens)
 - `fn update_price()` (checks current timestamp and updates price if needed)
-- `fn in_process()` (checks if ico wasn't ended and get_balance() > 0)
+- `fn in_process()` (checks if ico was started, wasn't ended and get_balance() > 0)
 
 ## Init values
 - tokens_goal
 - token_id
 - owner 
 - start_price
-- price_increase_step (optional)
-- time_increase_step (optional)
+- price_increase_step
+- time_increase_step 
