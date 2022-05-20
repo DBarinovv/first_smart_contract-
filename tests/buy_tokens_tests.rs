@@ -1,5 +1,4 @@
 use gtest::System;
-
 use ico_contract::constants::*;
 
 mod init_ico;
@@ -145,4 +144,32 @@ fn buy_too_many_tokens() {
 
     let amount: u128 = TOKENS_CNT + 1;
     buy_tokens(&ico, amount, amount * START_PRICE);
+}
+
+#[test]
+#[should_panic]
+fn buy_zero_tokens() {
+    let sys = System::new();
+    init(&sys);
+
+    let ico = sys.get_program(2);
+
+    start_sale(&ico, 2);
+
+    let amount: u128 = 0;
+    buy_tokens(&ico, amount, amount * START_PRICE);
+}
+
+#[test]
+#[should_panic]
+fn overflowing_multiplication_buy() {
+    let sys = System::new();
+    init(&sys);
+
+    let ico = sys.get_program(2);
+
+    start_sale(&ico, 2);
+
+    let amount: u128 = u128::MAX / START_PRICE + 1;
+    buy_tokens(&ico, amount, 544);
 }
