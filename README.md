@@ -87,5 +87,7 @@ pub struct IcoState {
 ### Functions
 
 
-## Conclusion
+## Source code
+The source code of this example of ICO smart contract and the example of an implementation of its testing is available on [Github](https://github.com/gear-dapps/crowdsale-ico).
 
+For more details about testing smart contracts written on Gear, refer to the [Program Testing](https://wiki.gear-tech.io/developing-contracts/testing) article.
