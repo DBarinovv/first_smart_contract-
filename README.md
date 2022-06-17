@@ -85,7 +85,20 @@ pub struct IcoState {
 - `token_holders` - the list of buyers and the number of tokens they bought
 
 ### Functions
+- Starts the ICO. Only owner can call it:
+```rust
+async fn start_ico(&mut self, config: IcoAction)
+```
 
+- Purchase of tokens. Anyone with enough balance can call and buy tokens:
+```rust
+pub fn buy_tokens(&mut self, tokens_cnt: u128)
+```
+
+- Ends the ICO. Only owner can call it:
+```rust
+async fn end_sale(&mut self)
+```
 
 ## Source code
 The source code of this example of ICO smart contract and the example of an implementation of its testing is available on [Github](https://github.com/gear-dapps/crowdsale-ico).
