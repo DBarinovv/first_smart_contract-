@@ -75,14 +75,14 @@ pub struct IcoState {
     pub ico_ended: bool, // true if ICO was ended
 }
 ```
-- `start_price` // initial price of tokens
-- `price_increase_step` // how much does the price increase
-- `time_increase_step` // the period of time after which the price increases
-- `tokens_sold` // how many tokens were sold
-- `tokens_goal` // how many tokens are we going to sell
-- `owner` // contract owner
-- `token_address` // fungible token address 
-- `token_holders` // the list of buyers and the number of tokens they bought
+- `start_price` - initial price of tokens
+- `price_increase_step` - how much does the price increase
+- `time_increase_step` - the period of time after which the price increases
+- `tokens_sold` - how many tokens were sold
+- `tokens_goal` - how many tokens are we going to sell
+- `owner` - contract owner
+- `token_address` - fungible token address 
+- `token_holders` - the list of buyers and the number of tokens they bought
 
 ### Functions
 
