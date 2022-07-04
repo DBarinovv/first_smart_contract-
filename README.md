@@ -19,6 +19,8 @@ fn borrow(amount: U256); // Borrow amount of current tokens
 
 fn repay_borrow(amount: U256); // Repay borrow on current token
 
+fn withdraw(amount: U256); // Withdraw amount of current tokens
+
 fn get_debt_amount(address: ActorID) -> U256; // State function. Returns how much tokens user need to bring back
 
 fn get_lend_amount(address: ActorID) -> U256; // State function. Returns how much tokens user has on his deposit
