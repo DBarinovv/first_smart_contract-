@@ -19,7 +19,7 @@ fn accrue_interest() -> u128;
 
 // `user_address` supplies assets into the market and receives cTokens in exchange
 // `amount` - The amount of the underlying asset to supply
-fn mint_action(user_address: ActorId, amount: u128)
+fn mint_action(user_address: ActorId, amount: u128);
 
 // Consists of `accrue_interest` and `mint_action` with `msg::source()` as argument
 fn mint(amount: u128);
