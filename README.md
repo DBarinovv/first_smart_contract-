@@ -56,6 +56,13 @@ fn liquidate_borrow_action(liquidator: ActorId, borrower: ActorId, amount: u128,
 
 // Consists of `accrue_interest`, `accrue_interest` for `market` and `liquidate_borrow_action` with `msg::source()` as argument
 fn liquidate_borrow(borrower: ActorId, amount: u128, market: ...);
+
+// Transfers collateral tokens (this market) to the `liquidator`
+// `seizer_token` - The contract seizing the collateral (i.e. borrowed cToken)
+// `liquidator` - The account receiving seized collateral
+// `borrower` - The account having collateral seized 
+// `amount` - The number of cTokens to seize
+fn seize(seizer_token: ActorId, liquidator: ActorId, borrower: ActorId, amount: u128);
 ```
 
 ## DeFi
