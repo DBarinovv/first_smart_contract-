@@ -9,7 +9,7 @@ Consists of two parts:
 ## Borrowing
 
 ### CToken 
-It is also ERC20 token, so in addition to the standard functions, we will add the following:
+It is fungible token, so in addition to the default functions(approve, transfer, burn), we will add the following:
 ```rust
 // Return the underlying balance of the `owner`
 fn balance_underlying(owner: ActorId) -> u128;
