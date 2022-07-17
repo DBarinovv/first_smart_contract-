@@ -1,7 +1,7 @@
 # Crowdsale (ICO)
 
 ## Introduction
-An initial coin offering (ICO) or initial currency offering is a type of funding using cryptocurrencies. It is a form of crowdfunding, in which a quantity of cryptocurrency is sold in the form of "tokens" ("coins") to investors, in exchange for legal tender or other cryptocurrencies such as Bitcoin or Ether. The tokens are promoted as future functional units of currency when the ICO's funding goal is met and the project successfully launches
+An initial coin offering (ICO) or initial currency offering is a type of funding using cryptocurrencies. It is a form of crowdfunding, in which a quantity of cryptocurrency is sold in the form of "tokens" ("coins") to investors, in exchange for other cryptocurrencies such as Ether. The tokens are promoted as future functional units of currency when the ICO's funding goal is met and the project successfully launches
 
 ## Interface
 ### Source files
