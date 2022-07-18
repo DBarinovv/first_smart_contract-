@@ -31,7 +31,7 @@ fn mint(amount: u128);
 // Consists of `accrue_interest` and `redeem_action` with `msg::source()` as argument
 fn redeem(amount: u128);
 
-// `user_address` borrow assets from the contract to their own address
+// `user_address` borrow assets from the contract
 // `amount` - The amount of the underlying asset to borrow
 fn borrow_action(user_address: ActorId, amount: u128);
 
