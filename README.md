@@ -2,74 +2,84 @@ Tech description
 
 # Compound protocol
 
-Consists of two parts:
-- Main lend&borrow logic.
-- Interaction with many users and tokens. Algorithm for finding risk weights, interest rate etc.
-
-## Borrowing
-
-### CToken 
-It is fungible token, so in addition to the default functions(approve, transfer, burn), we will add the following:
 ```rust
-// Return the underlying balance of the `owner`
-fn balance_underlying(owner: ActorId) -> u128;
+struct Compound {
+    token_address: ActorId,  // address of token contract
+    ctoken_address: ActorId, // address of ctoken contract
+    owner_address: ActorId,  // address of owner
+    lend_data: LendData,     // info realted to lend tokens
+    borrow_data: BorrowData, // info realted to borrow tokens
+    user_deposits: BTreeMap<ActorId, BTreeSet<Payment>>, // map of address -> lend payment
+    user_borrows: BTreeMap<ActorId, BTreeSet<Payment>>,  // map of address -> borrow payment
+}
 
-// Calculates interest accrued from the last checkpointed block up to the current block and writes new checkpoint to storage
-fn accrue_interest() -> u128;
+pub struct LendData {
+    pub ctoken_rate: u128,    // token cost * `ctoken_rate` = Ctoken cost
+    pub interest_rate: u128,  // user will earn `interest_rate` percent asset
+    pub max_deposit_id: u128, // id of the last lend
+}
 
-// `user_address` supplies assets into the market and receives cTokens in exchange
-// `amount` - The amount of the underlying asset to supply
-fn mint_action(user_address: ActorId, amount: u128);
+pub struct BorrowData {
+    pub collateral_factor: u128, // user can borrow callateral * `collateral_factor`
+    pub borrow_rate: u128,       // user will have to pay borrowed amount * `borrow_rate`
+    pub max_borrow_id: u128,     // id of the last borrow
+}
 
-// Consists of `accrue_interest` and `mint_action` with `msg::source()` as argument
-fn mint(amount: u128);
+pub struct Payment {
+    pub amount: u128,         // how much tokens in the lend/borrow
+    pub ctokens_amount: u128, // 0 if payment is borrow, otherwise how much ctokens got for lending
+    pub interest_rate: u128,  // `interest_rate` or `borrow_rate`
+    pub payment_time: u64,    // timestamp when payment was made
+    pub id: u128,             // payment id 
+}
 
-// `user_address` redeems cTokens in exchange for the underlying asset
-// `amount` - The number of cTokens to redeem
- fn redeem_action(user_address: ActorId, amount: u128);
+impl Payment {
+    // returns how amount increased 
+    pub fn count_interest(&self, amount: u128, time_now: u64) -> u128; 
+}
 
-// Consists of `accrue_interest` and `redeem_action` with `msg::source()` as argument
-fn redeem(amount: u128);
-
-// `user_address` borrow assets from the contract
-// `amount` - The amount of the underlying asset to borrow
-fn borrow_action(user_address: ActorId, amount: u128);
-
-// Consists of `accrue_interest` and `borrow_action` with `msg::source()` as argument
-fn borrow(amount: u128);
-
-// Borrows are repaid by another user (possibly the borrower) and return the actual repayment amount
-// `payer` - The account paying off the borrow
-// `borrower` - The account with the debt being payed off
-// `amount` - The amount of underlying tokens being returned
-fn repay_borrow_action(payer: ActorId, borrower: ActorId, amount: u128) -> u128;
-
-// Consists of `accrue_interest` and `repay_borrow_action` with `msg::source()` as argument
-fn repay_borrow(amount: u128);
-
-// `liquidator` liquidates `borrower` collateral. The collateral seized is transferred to the `liquidator`
-// `liquidator` - The address repaying the borrow and seizing collateral
-// `borrower` - The borrower of this cToken to be liquidated
-// `amount` - The amount of the underlying borrowed asset to repay
-// `market` - The market in which to seize collateral from the borrower
-fn liquidate_borrow_action(liquidator: ActorId, borrower: ActorId, amount: u128, market: ...);
-
-// Consists of `accrue_interest`, `accrue_interest` for `market` and `liquidate_borrow_action` with `msg::source()` as argument
-fn liquidate_borrow(borrower: ActorId, amount: u128, market: ...);
-
-// Transfers collateral tokens (this market) to the `liquidator`
-// `seizer_token` - The contract seizing the collateral (i.e. borrowed cToken)
-// `liquidator` - The account receiving seized collateral
-// `borrower` - The account having collateral seized 
-// `amount` - The number of cTokens to seize
-fn seize(seizer_token: ActorId, liquidator: ActorId, borrower: ActorId, amount: u128);
-```
-
-## DeFi
-
-Some functions (in progress):
-```rust
-- fn enter_market(address: ActorId); 
-- fn exit_market(address: ActorId);
-- ...
+impl Compound {
+    // `msg::source` lend `amount` of tokens
+    pub async fn lend_tokens(&mut self, amount: u128); 
+    
+    // `msg::source` borrow `amount` of tokens
+    pub async fn borrow_tokens(&mut self, amount: u128); 
+    
+    // `msg::source` redeems tokens with ids in `lend_to_redeem` and refunds borrows in `amount_per_borrow`
+    pub async fn redeem_tokens(
+        &mut self,
+        lend_to_redeem: BTreeSet<u128>,
+        amount_per_borrow: BTreeMap<u128, u128>,
+    );
+    
+    // returns how much tokens are possible to borrow for `user`
+    fn borrow_possible(&self, user: ActorId) -> u128; 
+    
+    // returns is redeem posible with those params
+    fn redeem_posible(
+        &self,
+        user: ActorId,
+        lend_to_redeem: &BTreeSet<u128>,
+        amount_per_borrow: &BTreeMap<u128, u128>,
+    ) -> bool;
+    
+    // add payment to `container`
+    fn insert_payment(
+        address: ActorId,
+        container: &mut BTreeMap<ActorId, BTreeSet<Payment>>,
+        payment: &mut Payment,
+    );
+    
+    // delete all payments where amount = 0
+    fn delete_payments(&mut self, user_address: ActorId);
+    
+    // count how much ctokens corresponds to `tokens_amount`
+    fn count_ctokens(&mut self, tokens_amount: u128) -> u128;
+    
+    // count how much tokens corresponds to `ctokens_amount`
+    fn count_tokens(&mut self, ctokens_amount: u128) -> u128;
+    
+    // updates `tokens` -> `ctokens` rate
+    fn update_rate(&mut self);
+}
 ```
