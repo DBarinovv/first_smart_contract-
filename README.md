@@ -1,5 +1,3 @@
-Tech description
-
 # Compound protocol
 
 ```rust
